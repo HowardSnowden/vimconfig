@@ -40,6 +40,7 @@ set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 set tabpagemax=100
 
+ autocmd FileType eruby,html. set omnifunc=htmlcomplete#CompleteTags
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_wq = 0
@@ -62,9 +63,11 @@ nmap <silent> <leader><leader>T :TestFile<CR>
 nmap <silent> <leader><leader>a :TestSuite<CR>
 nmap <silent> <leader><leader>l :TestLast<CR>
 nmap <silent> <leader><leader>g :TestVisit<CR>
+nmap <leader>L :w<CR>:! standardrb --fix %<CR>
 
 filetype plugin indent on
 set autoindent
+set smartindent
 set autoread                                                 " reload files when changed on disk, i.e. via `git checkout`
 set backspace=2                                              " Fix broken backspace in some setups
 set backupcopy=yes                                           " see :help crontab
@@ -84,7 +87,7 @@ set showcmd
 set smartcase                                                " case-sensitive search if any caps
 set softtabstop=2                                            " insert mode tab and backspace use 2 spaces
 set tabstop=8                                                " actual tabs occupy 8 characters
-set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc
+"set wildignore=log/**,node_modules/**,target/**,tmp/**,*.rbc,resource_center/**
 set wildmenu                                                 " show a navigable menu for tab completion
 set wildmode=longest,list,full
 set nu
@@ -115,9 +118,11 @@ function! QuickfixFilenames()
   return join(map(values(buffer_numbers), 'fnameescape(v:val)'))
 endfunction
 
-filetype plugin on
-set omnifunc=syntaxcomplete#Complete
-
+  let g:SuperTabDefaultCompletionType = 'context'
+  autocmd FileType *
+    \ if &omnifunc != '' |
+    \   call SuperTabChain(&omnifunc, "<c-p>") |
+    \ endif
 
 
 if executable('standardrb')
